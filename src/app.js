@@ -1,5 +1,6 @@
 const express = require("express");
 const {adminAuth, userAuth} = require("./middleware/auth");
+require("./config/database");
 
 const app = new express();
 
