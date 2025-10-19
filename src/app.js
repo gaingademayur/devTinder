@@ -5,15 +5,11 @@ const User = require("./models/user");
 
 const app = new express();
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
     try {
-    const user = new User({
-        firstName: "Mayur",
-        lastName: "Gaingade",
-        emailId: "mayur@gmail.com",
-        age: "27",
-        password: "mayur@123"
-    });
+    const user = new User(req.body);
     await user.save();
     res.send("user added success");
     } catch(ex) {
