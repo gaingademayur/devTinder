@@ -4,10 +4,13 @@ require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = new express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
     try {
@@ -46,12 +49,40 @@ app.post("/login", async (req, res) => {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(isPasswordValid) {
+
+            // jwt
+            const token = jwt.sign({_id: user._id}, "MAYUR");
+            console.log(token)
+
+            res.cookie("token", token);
             res.send("login success");
         } else {
             res.status(400).send("Invalid password")
         }
     } catch(err) {
         res.status(400).send(err.message);
+    }
+});
+
+app.get("/profile", async (req, res) => {
+    try {
+        const cookies = req.cookies;
+
+        if(!cookies.token) {
+            throw new Error("token not found");
+        }
+
+        const {token} = req.cookies;
+        
+        const checkToken = await jwt.verify(token, "MAYUR");
+        
+        const {_id} = checkToken;
+        
+        const user = await User.findById(_id);
+
+        res.send(user);
+    } catch(ex) {
+        res.status(400).send("something went wrong" + ex);
     }
 });
 
