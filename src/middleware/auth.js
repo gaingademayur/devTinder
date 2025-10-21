@@ -1,21 +1,30 @@
-const adminAuth = (req, res, next) => {
-    console.log("check admin auth");
-    const token = "wabc";
-    if(token == 'abc') {
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+
+const userAuth = async (req, res, next) => {
+    try {
+        if(!req.cookies.token) {
+            throw new Error("Token not found");
+        }
+
+        const cookieData = jwt.verify(req.cookies.token, "MAYUR");
+
+        const {_id} = cookieData;
+        if(!_id) {
+            throw new Error("Id not found");
+        }
+
+        const user = await User.findById(_id)
+
+        if(!user) {
+            throw new Error("invalid token");
+        }
+
+        req.user = user;
         next();
-    } else {
-        res.send("authentication failed");
+    } catch(err) {
+        res.status(404).send("something went wrong" + err);
     }
 }
 
-const userAuth = (req, res, next) => {
-    console.log("check user auth");
-    const token = "wabc";
-    if(token == 'abc') {
-        next();
-    } else {
-        res.send("authentication failed");
-    }
-}
-
-module.exports = {adminAuth, userAuth};
+module.exports = {  userAuth};

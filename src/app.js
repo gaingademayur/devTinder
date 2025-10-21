@@ -64,21 +64,9 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
     try {
-        const cookies = req.cookies;
-
-        if(!cookies.token) {
-            throw new Error("token not found");
-        }
-
-        const {token} = req.cookies;
-        
-        const checkToken = await jwt.verify(token, "MAYUR");
-        
-        const {_id} = checkToken;
-        
-        const user = await User.findById(_id);
+        const user = req.user;
 
         res.send(user);
     } catch(ex) {
