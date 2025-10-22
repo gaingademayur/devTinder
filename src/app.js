@@ -51,7 +51,7 @@ app.post("/login", async (req, res) => {
         if(isPasswordValid) {
 
             // jwt
-            const token = jwt.sign({_id: user._id}, "MAYUR");
+            const token = jwt.sign({_id: user._id}, "MAYUR", {expiresIn: '1d'});
             console.log(token)
 
             res.cookie("token", token);
