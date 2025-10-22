@@ -47,12 +47,9 @@ app.post("/login", async (req, res) => {
             throw new Error("user not found");
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.verifyPassword(password);
         if(isPasswordValid) {
-
-            // jwt
-            const token = jwt.sign({_id: user._id}, "MAYUR", {expiresIn: '1d'});
-            console.log(token)
+            const token = await user.getJWT();
 
             res.cookie("token", token);
             res.send("login success");
