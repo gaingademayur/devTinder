@@ -29,7 +29,6 @@ requestRouter.post("/profile/:status/:toUserId", userAuth, async (req, res) => {
                 { fromUserId: toUserId, toUserId: fromUserId }
             ]
         });
-        console.log(checkRequest)
         if(checkRequest) {
             throw new Error("request already exists");
         }
